@@ -14,6 +14,10 @@ public class IntervalTrees {
         intervalTree.put(16, 22, 63);
 
         System.out.println(intervalTree.intersects(3, 5));
+        System.out.println(intervalTree.get(4, 8));
+        System.out.println(intervalTree.delete(4, 8));
+        System.out.println(intervalTree.get(4, 8));
+        System.out.println(intervalTree.intersects(3, 5));
     }
 }
 
@@ -49,11 +53,52 @@ class IntervalTreeImpl implements IIntervalTree {
 
     @Override
     public int get(int start, int end) {
-        return 0;
+        Node node = root;
+
+        while (node != null) {
+            if (start == node.start && end == node.end) {
+                return node.value;
+            }
+            if (node.left == null || start > node.left.max) {
+                node = node.right;
+                continue;
+            }
+            node = node.left;
+        }
+
+        return -1;
     }
 
     @Override
     public boolean delete(int start, int end) {
+        Node node = root;
+        Node parent = null;
+
+        while (node != null) {
+            if (start == node.start && end == node.end) {
+                if (parent == null) {
+                    node = null;
+                    return true;
+                }
+                if (parent.left == node) {
+                    parent.left = null;
+                    return true;
+                }
+                if (parent.right == node) {
+                    parent.right = null;
+                    return true;
+                }
+            }
+            if (node.left == null || start > node.left.max) {
+                parent = node;
+                node = node.right;
+                continue;
+            }
+
+            parent = node;
+            node = node.left;
+        }
+
         return false;
     }
 
